@@ -1,58 +1,248 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Unitimes
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Aplicação web para alunos acompanharem horários de aula e controlarem faltas por disciplina.
 
-## About Laravel
+Desenvolvido como projeto acadêmico da disciplina de **Engenharia de Software**, com foco em organização e gestão de projetos via [Taiga](https://taiga.io).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Índice
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Sobre o projeto](#-sobre-o-projeto)
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias](#-tecnologias)
+- [Estrutura do banco de dados](#-estrutura-do-banco-de-dados)
+- [Como rodar o projeto](#-como-rodar-o-projeto)
+- [Dados de teste](#-dados-de-teste)
+- [Estrutura de pastas](#-estrutura-de-pastas)
+- [Equipe](#-equipe)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Sobre o projeto
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+O **Unitimes** resolve um problema simples e cotidiano: alunos que perdem o controle das próprias faltas e só descobrem o problema quando já é tarde.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+O aluno se cadastra, escolhe a sua turma, e o sistema já exibe a grade de horários completa sem precisar cadastrar nada manualmente. A partir daí, ele pode registrar e remover faltas por disciplina, receber alertas quando estiver próximo do limite e visualizar um dashboard com o status geral das suas frequências.
 
-## Agentic Development
+As turmas, disciplinas e horários são cadastrados pelo administrador e ficam disponíveis para todos os alunos daquela turma.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
-```bash
-composer require laravel/boost --dev
+## Funcionalidades
 
-php artisan boost:install
+### Para o aluno
+- [x] Cadastro com escolha de turma
+- [x] Login e logout
+- [x] Visualização da grade semanal de horários
+- [x] Visualização da sala de cada aula
+- [x] Adicionar falta em uma disciplina
+- [x] Remover falta de uma disciplina
+- [x] Alerta amarelo ao atingir 75% do limite de faltas
+- [x] Alerta vermelho ao atingir o limite (risco de reprovação)
+- [x] Dashboard com resumo de todas as disciplinas
+
+### Para o administrador
+- [x] Cadastrar nova aula/disciplina
+- [x] Editar aula existente
+- [x] Excluir aula
+
+---
+
+## Tecnologias
+
+| Camada      | Tecnologia              |
+|-------------|-------------------------|
+| Back-end    | PHP 8.x / Laravel 10.x  |
+| Banco       | MySQL                   |
+| Front-end   | Blade Templates         |
+| Estilização | Tailwind CSS            |
+| Versionamento | Git + GitHub          |
+
+---
+
+## Estrutura do Banco de Dados
+
+```
+turmas
+├── id
+└── nome
+
+aulas
+├── id
+├── nome
+├── professor (nullable)
+├── dia_semana
+├── horario_inicio
+├── horario_fim
+├── sala
+├── carga_horaria
+├── limite_faltas
+└── turma_id (FK)
+
+users
+├── id
+├── name
+├── email
+├── password
+├── is_admin
+└── turma_id (FK)
+
+faltas
+├── id
+├── user_id (FK)
+├── aula_id (FK)
+└── quantidade
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## Como rodar o projeto
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Pré-requisitos
 
-## Code of Conduct
+- PHP >= 8.1
+- Composer
+- MySQL rodando localmente
+- Node.js (opcional — apenas se quiser compilar assets)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Clone o repositório
 
-## Security Vulnerabilities
+```bash
+git clone https://github.com/seu-usuario/unitimes.git
+cd unitimes
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Instale as dependências
 
-## License
+```bash
+composer install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Configure o ambiente
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Edite o arquivo `.env` com suas credenciais do banco:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=unitimes
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 4. Crie o banco e rode as migrations com seed
+
+```bash
+php artisan migrate --seed
+```
+
+> Isso cria todas as tabelas e popula o banco com turmas, disciplinas e um usuário administrador de teste.
+
+### 5. Inicie o servidor
+
+```bash
+php artisan serve
+```
+
+Acesse no navegador: [http://localhost:8000](http://localhost:8000)
+
+---
+
+## Dados de Teste
+
+Os seeds criam os seguintes dados automaticamente:
+
+### Turmas disponíveis
+- ADS — 1º Semestre
+- ADS — 2º Semestre
+- SI — 3º Semestre
+
+### Usuário administrador
+| Campo  | Valor                  |
+|--------|------------------------|
+| E-mail | admin@unitimes.com     |
+| Senha  | password               |
+
+> Com o usuário admin, é possível acessar o painel de gerenciamento de aulas em `/admin/aulas`.
+
+### Para testar como aluno
+Acesse `/register`, preencha os dados e escolha uma turma. A grade de horários já estará disponível.
+
+---
+
+## Estrutura de Pastas
+
+```
+unitimes/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── AuthController.php
+│   │   │   ├── DashboardController.php
+│   │   │   ├── GradeController.php
+│   │   │   ├── FaltaController.php
+│   │   │   └── AulaController.php
+│   │   └── Middleware/
+│   │       └── AdminMiddleware.php
+│   └── Models/
+│       ├── User.php
+│       ├── Turma.php
+│       ├── Aula.php
+│       └── Falta.php
+├── database/
+│   ├── migrations/
+│   └── seeders/
+│       ├── TurmaSeeder.php
+│       ├── AulaSeeder.php
+│       └── DatabaseSeeder.php
+├── resources/
+│   └── views/
+│       ├── layouts/
+│       │   └── app.blade.php
+│       ├── auth/
+│       │   ├── login.blade.php
+│       │   └── register.blade.php
+│       ├── dashboard.blade.php
+│       ├── grade.blade.php
+│       └── aulas/
+│           ├── index.blade.php
+│           ├── create.blade.php
+│           └── edit.blade.php
+└── routes/
+    └── web.php
+```
+
+---
+
+## Equipe
+
+| Membro           | Função principal                                  |
+|------------------|---------------------------------------------------|
+| Gabriel Vinicius | Back-end, Laravel, banco de dados, regras de negócio |
+| Leonardo         | Views Blade, layout, estilização Tailwind          |
+| João             | Testes manuais, documentação, ajustes visuais     |
+| Gabriel Colares  | Layout, apresentação, README, apoio nas views     |
+
+---
+
+## Gestão do Projeto
+
+O projeto foi planejado e acompanhado via **Taiga**, com:
+
+- Backlog estruturado em épicos e user stories
+- 2 sprints de 7 dias cada
+- Tasks atribuídas por membro de acordo com o nível técnico
+- Critérios de aceitação definidos para cada entrega
+
+---
+
+<p align="center">
+  Projeto acadêmico — Engenharia de Software
+</p>
