@@ -26,7 +26,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('autheticated.dashboard');
+        return redirect()->route('authenticated.dashboard');
     }
 
     public function showLogin()
@@ -46,7 +46,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route('autheticated.dashboard');
+        return redirect()->route('authenticated.dashboard');
     }
 
     public function logout(Request $request)

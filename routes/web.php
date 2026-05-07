@@ -18,8 +18,8 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
-        return view('autheticated.dashboard');
-    })->name('autheticated.dashboard');
+        return view('authenticated.dashboard');
+    })->name('authenticated.dashboard');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('authenticated.logout');
 });
