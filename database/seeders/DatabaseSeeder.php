@@ -2,27 +2,29 @@
 
 namespace Database\Seeders;
 
+use App\Models\Aula;
+use App\Models\Turma;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        User::where('email', 'admin@unitimes.com')->delete();
+
         $this->call([
             TurmaSeeder::class,
-            AulaSeeder::class,
         ]);
 
-        User::updateOrCreate(
-            ['email' => 'admin@unitimes.com'],
-            [
-                'name' => 'Administrador',
-                'password' => Hash::make('password'),
-                'is_admin' => true,
-                'turma_id' => null,
-            ]
-        );
+        $turmaPadrao = Turma::where('nome', '1º Período')
+            ->whereHas('curso', fn ($query) => $query->where('nome', 'Análise e Desenvolvimento de Sistemas'))
+            ->first();
+
+        User::where('is_admin', false)
+            ->whereNull('turma_id')
+            ->update(['turma_id' => $turmaPadrao?->id]);
+
+        User::factory()->admin()->create();
     }
 }

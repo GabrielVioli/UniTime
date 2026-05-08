@@ -23,10 +23,10 @@ class AdminValidateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'O e-mail e obrigatorio.',
-            'email.email' => 'Informe um e-mail valido.',
-            'password.required' => 'A senha e obrigatoria.',
-            'admin_code.required' => 'O codigo de administrador e obrigatorio.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.email' => 'Informe um e-mail válido.',
+            'password.required' => 'A senha é obrigatória.',
+            'admin_code.required' => 'O código de administrador é obrigatório.',
         ];
     }
 }

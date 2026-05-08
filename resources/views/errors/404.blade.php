@@ -11,6 +11,7 @@
                 @else
                     <a href="{{ route('login') }}" class="rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800">Ir ao login</a>
                 @endauth
+
                 <a href="javascript:history.back()" class="rounded-md border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100">Voltar</a>
             </div>
         </section>

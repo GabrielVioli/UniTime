@@ -15,21 +15,15 @@ class AdminAuthController extends Controller
 
     public function login(AdminValidateRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-
         if ($request->admin_code !== 'UNITIMES-ADMIN') {
             return back()
-                ->withErrors([
-                    'admin_code' => 'Código de administrador inválido.',
-                ])
+                ->withErrors(['admin_code' => 'Código de administrador inválido.'])
                 ->onlyInput('email');
         }
 
-        if (! Auth::attempt($credentials)) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             return back()
-                ->withErrors([
-                    'email' => 'E-mail ou senha inválidos.',
-                ])
+                ->withErrors(['email' => 'E-mail ou senha inválidos.'])
                 ->onlyInput('email');
         }
 
@@ -37,14 +31,12 @@ class AdminAuthController extends Controller
             Auth::logout();
 
             return back()
-                ->withErrors([
-                    'email' => 'Este usuário não possui acesso de administrador.',
-                ])
+                ->withErrors(['email' => 'Este usuário não possui acesso de administrador.'])
                 ->onlyInput('email');
         }
 
         $request->session()->regenerate();
 
-        return redirect()->route('admin.aulas.index');
+        return redirect()->route('admin.dashboard');
     }
 }

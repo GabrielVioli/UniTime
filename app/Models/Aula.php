@@ -3,9 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Aula extends Model
 {
+    use HasFactory;
+
+    protected $attributes = [
+        'sala' => 'A definir',
+        'carga_horaria' => 0,
+        'limite_faltas' => 25,
+    ];
+
     protected $fillable = [
         'nome',
         'professor',

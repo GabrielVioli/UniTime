@@ -41,14 +41,43 @@
         </div>
 
         <div>
+            <label for="curso_id" class="label">Curso</label>
+            <select
+                id="curso_id"
+                name="curso_id"
+                class="input"
+                data-course-select
+                data-target-turmas="turma_id"
+            >
+                <option value="">Selecione seu curso</option>
+
+                @foreach ($cursos as $curso)
+                    <option value="{{ $curso->id }}" @selected(old('curso_id') == $curso->id)>
+                        {{ $curso->nome }}
+                    </option>
+                @endforeach
+            </select>
+
+            @error('curso_id')
+                <p class="error">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
             <label for="turma_id" class="label">Turma</label>
             <select id="turma_id" name="turma_id" class="input">
                 <option value="">Selecione sua turma</option>
 
-                @foreach ($turmas as $turma)
-                    <option value="{{ $turma->id }}" @selected(old('turma_id') == $turma->id)>
-                        {{ $turma->nome }}
-                    </option>
+                @foreach ($cursos as $curso)
+                    @foreach ($curso->turmas as $turma)
+                        <option
+                            value="{{ $turma->id }}"
+                            data-curso-id="{{ $curso->id }}"
+                            @selected(old('turma_id') == $turma->id)
+                        >
+                            {{ $turma->nome }}
+                        </option>
+                    @endforeach
                 @endforeach
             </select>
 

@@ -10,6 +10,7 @@ class Falta extends Model
         'user_id',
         'aula_id',
         'quantidade',
+        'presencas',
     ];
 
     public function user()

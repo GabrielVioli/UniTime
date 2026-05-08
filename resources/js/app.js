@@ -50,3 +50,30 @@ passwordInput?.addEventListener('input', () => {
     updateMatch();
 });
 confirmInput?.addEventListener('input', updateMatch);
+
+document.querySelectorAll('[data-course-select]').forEach((courseSelect) => {
+    const turmaSelect = document.getElementById(courseSelect.dataset.targetTurmas);
+
+    if (! turmaSelect) {
+        return;
+    }
+
+    const updateTurmas = () => {
+        const selectedCurso = courseSelect.value;
+
+        turmaSelect.querySelectorAll('option[data-curso-id]').forEach((option) => {
+            const belongsToCurso = option.dataset.cursoId === selectedCurso;
+            option.hidden = ! belongsToCurso;
+            option.disabled = ! belongsToCurso;
+        });
+
+        const selectedOption = turmaSelect.selectedOptions[0];
+
+        if (selectedOption?.dataset.cursoId && selectedOption.dataset.cursoId !== selectedCurso) {
+            turmaSelect.value = '';
+        }
+    };
+
+    courseSelect.addEventListener('change', updateTurmas);
+    updateTurmas();
+});

@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AulaController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,6 +21,8 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('authenticated.dashboard');
+    Route::post('/aulas/{aula}/presenca', [DashboardController::class, 'marcarPresenca'])->name('aulas.presenca');
+    Route::post('/aulas/{aula}/falta', [DashboardController::class, 'marcarFalta'])->name('aulas.falta');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('authenticated.logout');
 });
@@ -33,5 +36,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/aulas', [AulaController::class, 'index'])->name('admin.aulas.index');
+    Route::post('/admin/aulas', [AulaController::class, 'store'])->name('admin.aulas.store');
 });

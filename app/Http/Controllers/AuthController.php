@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginValidateRequest;
 use App\Http\Requests\RegisterValidateRequest;
-use App\Models\Turma;
+use App\Models\Curso;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,16 +13,19 @@ class AuthController extends Controller
 {
     public function showRegister()
     {
-        $turmas = Turma::all();
+        $cursos = Curso::with('turmas')->orderBy('nome')->get();
 
-        return view('auth.register', compact('turmas'));
+        return view('auth.register', compact('cursos'));
     }
 
     public function register(RegisterValidateRequest $request)
     {
-        $data = $request->validated();
-
-        $user = User::create($data);
+        $user = User::create($request->safe()->only([
+            'name',
+            'email',
+            'password',
+            'turma_id',
+        ]));
 
         Auth::login($user);
 
