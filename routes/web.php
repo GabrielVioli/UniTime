@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Models\Aula;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -18,7 +19,16 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
-        return view('authenticated.dashboard');
+        $user = auth()->user()->load(['turma.aulas', 'faltas']);
+        $aulas = $user->turma?->aulas?->sortBy('dia_semana') ?? collect();
+        $faltasPorAula = $user->faltas->keyBy('aula_id');
+
+        return view('authenticated.dashboard', [
+            'user' => $user,
+            'aulas' => $aulas,
+            'faltasPorAula' => $faltasPorAula,
+            'totalFaltas' => $user->faltas->sum('quantidade'),
+        ]);
     })->name('authenticated.dashboard');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('authenticated.logout');
@@ -38,6 +48,8 @@ Route::middleware('auth')->group(function () {
             abort(403);
         }
 
-        return view('admin.aulas.index');
+        return view('admin.aulas.index', [
+            'aulas' => Aula::with('turma')->orderBy('turma_id')->orderBy('dia_semana')->get(),
+        ]);
     })->name('admin.aulas.index');
 });

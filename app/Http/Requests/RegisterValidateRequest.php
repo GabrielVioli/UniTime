@@ -28,6 +28,7 @@ class RegisterValidateRequest extends FormRequest
                 'required',
                 'string',
                 'min:8',
+                'confirmed',
             ],
 
             'turma_id' => [
@@ -49,6 +50,7 @@ class RegisterValidateRequest extends FormRequest
 
             'password.required' => 'A senha é obrigatória.',
             'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
+            'password.confirmed' => 'As senhas nao coincidem.',
 
             'turma_id.required' => 'Selecione uma turma.',
             'turma_id.exists' => 'A turma selecionada é inválida.',
