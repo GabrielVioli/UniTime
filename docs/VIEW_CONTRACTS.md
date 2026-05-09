@@ -2,10 +2,11 @@
 
 Este arquivo documenta o que o front precisa saber para recriar as telas.
 
-As views de login, cadastro do aluno e erro 404 continuam no projeto porque ja estao prontas:
+As views de login, cadastro do aluno, login admin e erro 404 continuam no projeto porque ja estao prontas:
 
 - `resources/views/auth/login.blade.php`
 - `resources/views/auth/register.blade.php`
+- `resources/views/admin/auth/login.blade.php`
 - `resources/views/components/auth/wrapper.blade.php`
 - `resources/views/components/layouts/app.blade.php`
 - `resources/views/errors/404.blade.php`
@@ -93,7 +94,7 @@ Apos cadastro valido:
 
 ## Login admin
 
-View esperada: `resources/views/admin/auth/login.blade.php`
+View mantida: `resources/views/admin/auth/login.blade.php`
 
 Rota de exibicao:
 
