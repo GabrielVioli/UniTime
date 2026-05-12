@@ -11,8 +11,8 @@ class Aula extends Model
 
     protected $attributes = [
         'sala' => 'A definir',
-        'carga_horaria' => 0,
-        'limite_faltas' => 25,
+        'carga_horaria' => 80,
+        'limite_faltas' => 20,
     ];
 
     protected $fillable = [

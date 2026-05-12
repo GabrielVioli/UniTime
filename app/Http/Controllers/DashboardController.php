@@ -23,21 +23,10 @@ class DashboardController extends Controller
             'diasSemana' => $diasSemana,
             'faltasPorAula' => $faltasPorAula,
             'totalFaltas' => $user->faltas->sum('quantidade'),
-            'totalPresencas' => $user->faltas->sum('presencas'),
         ]);
     }
 
-    public function marcarPresenca(Aula $aula)
-    {
-        return $this->registrar($aula, 'presencas');
-    }
-
     public function marcarFalta(Aula $aula)
-    {
-        return $this->registrar($aula, 'quantidade');
-    }
-
-    private function registrar(Aula $aula, string $campo)
     {
         $user = auth()->user();
 
@@ -46,7 +35,7 @@ class DashboardController extends Controller
         Falta::firstOrCreate(
             ['user_id' => $user->id, 'aula_id' => $aula->id],
             ['quantidade' => 0, 'presencas' => 0]
-        )->increment($campo);
+        )->increment('quantidade');
 
         return back();
     }

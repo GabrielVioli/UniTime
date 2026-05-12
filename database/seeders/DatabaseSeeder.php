@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Aula;
 use App\Models\Turma;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -15,6 +14,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             TurmaSeeder::class,
+            AulaSeeder::class,
         ]);
 
         $turmaPadrao = Turma::where('nome', '1º Período')

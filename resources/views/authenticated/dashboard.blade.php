@@ -105,7 +105,8 @@
                     @php
                         $faltaReg = $faltasPorAula->get($aula->id);
                         $qtdFalta = $faltaReg?->quantidade ?? 0;
-                        $presencas = $faltaReg?->presencas ?? 0;
+                        $aulasPrevistas = max(1, (int) ($aula->carga_horaria ?? 80));
+                        $presencas = max(0, $aulasPrevistas - $qtdFalta);
                         $limite = max(1, $aula->limite_faltas ?? 1);
                         $pct = min(100, ($qtdFalta / $limite) * 100);
 
@@ -165,7 +166,7 @@
                             </form>
 
                             <span class="text-xs text-muted-app">
-                                {{ $presencas }} presenças registradas
+                                {{ $presencas }} presenças de {{ $aulasPrevistas }} aulas
                             </span>
                         </div>
                     </article>
@@ -206,6 +207,7 @@
                                             {{ \Carbon\Carbon::parse($aula->horario_inicio)->format('H:i') }} -
                                             {{ \Carbon\Carbon::parse($aula->horario_fim)->format('H:i') }}
                                         </p>
+                                        <p class="mt-1 text-xs text-muted-app">2 aulas</p>
                                         @if ($aula->sala)
                                             <p class="mt-1 text-xs text-muted-app">Sala {{ $aula->sala }}</p>
                                         @endif

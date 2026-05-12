@@ -164,6 +164,7 @@
                                 <th class="px-4 py-3 text-left text-xs font-semibold tracking-wider hidden md:table-cell text-muted-app">TURMA</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold tracking-wider hidden lg:table-cell text-muted-app">HORÁRIO</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold tracking-wider hidden lg:table-cell text-muted-app">SALA</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold tracking-wider text-muted-app">AÇÕES</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border-app">
@@ -188,10 +189,23 @@
                                 <td class="px-4 py-3 hidden lg:table-cell text-sm text-muted-app">
                                     {{ $aula->sala ?? '—' }}
                                 </td>
+                                <td class="px-4 py-3 text-right">
+                                    <form method="POST" action="{{ route('admin.aulas.destroy', $aula) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button
+                                            type="submit"
+                                            class="btn-danger"
+                                            onclick="return confirm('Excluir a aula {{ $aula->nome }}?')"
+                                        >
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-sm text-muted-app">
+                                <td colspan="5" class="px-6 py-12 text-center text-sm text-muted-app">
                                     Nenhuma aula cadastrada ainda.
                                 </td>
                             </tr>

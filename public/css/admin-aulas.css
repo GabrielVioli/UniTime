@@ -73,6 +73,23 @@ h3,
     color: var(--text);
 }
 
+.btn-danger {
+    background: rgba(248, 81, 73, .10);
+    border: 1px solid rgba(248, 81, 73, .28);
+    border-radius: 6px;
+    color: #ffb4ad;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 7px 10px;
+    transition: background .15s, border-color .15s;
+}
+
+.btn-danger:hover {
+    background: rgba(248, 81, 73, .16);
+    border-color: rgba(248, 81, 73, .45);
+}
+
 .form-input {
     background: var(--surface-strong);
     border: 1px solid var(--border);

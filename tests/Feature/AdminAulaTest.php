@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Turma;
 use App\Models\User;
+use App\Models\Aula;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,6 +36,30 @@ class AdminAulaTest extends TestCase
             'turma_id' => $turma->id,
             'sala' => 'Lab 3',
             'limite_faltas' => 15,
+            'carga_horaria' => 80,
         ]);
+    }
+
+    public function test_admin_can_delete_class(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $aula = Aula::factory()->create();
+
+        $this->actingAs($admin)
+            ->delete(route('admin.aulas.destroy', $aula))
+            ->assertRedirect(route('admin.aulas.index'));
+
+        $this->assertDatabaseMissing('aulas', [
+            'id' => $aula->id,
+        ]);
+    }
+
+    public function test_non_admin_user_cannot_access_admin_class_routes(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('admin.aulas.index'))
+            ->assertForbidden();
     }
 }

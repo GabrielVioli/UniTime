@@ -17,26 +17,25 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    });
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('authenticated.dashboard');
-    Route::post('/aulas/{aula}/presenca', [DashboardController::class, 'marcarPresenca'])->name('aulas.presenca');
     Route::post('/aulas/{aula}/falta', [DashboardController::class, 'marcarFalta'])->name('aulas.falta');
-
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('authenticated.logout');
 });
 
-Route::middleware('guest')->group(function () {
-    Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
-        ->name('admin.login');
-
-    Route::post('/admin/login', [AdminAuthController::class, 'login'])
-        ->name('admin.login.submit');
-});
-
-Route::middleware('auth')->group(function () {
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/aulas', [AulaController::class, 'index'])->name('admin.aulas.index');
-    Route::post('/admin/aulas', [AulaController::class, 'store'])->name('admin.aulas.store');
-});
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', 'admin'])
+    ->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/aulas', [AulaController::class, 'index'])->name('aulas.index');
+        Route::post('/aulas', [AulaController::class, 'store'])->name('aulas.store');
+        Route::delete('/aulas/{aula}', [AulaController::class, 'destroy'])->name('aulas.destroy');
+    });

@@ -30,4 +30,15 @@ class AulaController extends Controller
             ->route('admin.aulas.index')
             ->with('success', 'Aula criada com sucesso.');
     }
+
+    public function destroy(Aula $aula)
+    {
+        abort_unless(auth()->user()->is_admin, 403);
+
+        $aula->delete();
+
+        return redirect()
+            ->route('admin.aulas.index')
+            ->with('success', 'Aula excluída com sucesso.');
+    }
 }

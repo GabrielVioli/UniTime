@@ -34,6 +34,7 @@ class StudentDashboardTest extends TestCase
         $response->assertSee('Aula da turma do aluno');
         $response->assertDontSee('Aula de outra turma');
         $response->assertSee('Adicionar falta');
+        $response->assertSee('80 presenças de 80 aulas');
     }
 
     public function test_student_can_add_absence_only_to_class_from_their_turma(): void
@@ -52,6 +53,7 @@ class StudentDashboardTest extends TestCase
             'user_id' => $student->id,
             'aula_id' => $allowedAula->id,
             'quantidade' => 1,
+            'presencas' => 0,
         ]);
 
         $this->actingAs($student)
