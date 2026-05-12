@@ -16,10 +16,12 @@ class AulaValidateRequest extends FormRequest
     {
         return [
             'nome' => ['required', 'string', 'max:255'],
-            'professor' => ['required', 'string', 'max:255'],
+            'professor' => ['nullable', 'string', 'max:255'],
             'dia_semana' => ['required', 'string', 'in:segunda,terca,quarta,quinta,sexta,sabado'],
             'horario_inicio' => ['required', 'date_format:H:i'],
             'horario_fim' => ['required', 'date_format:H:i', 'after:horario_inicio'],
+            'sala' => ['nullable', 'string', 'max:255'],
+            'limite_faltas' => ['required', 'integer', 'min:1'],
             'curso_id' => ['required', 'exists:cursos,id'],
             'turma_id' => [
                 'required',
@@ -32,7 +34,17 @@ class AulaValidateRequest extends FormRequest
     {
         $data = parent::validated($key, $default);
 
+        if ($key !== null) {
+            return $data;
+        }
+
         unset($data['curso_id']);
+
+        foreach (['sala'] as $field) {
+            if (blank($data[$field] ?? null)) {
+                unset($data[$field]);
+            }
+        }
 
         return $data;
     }

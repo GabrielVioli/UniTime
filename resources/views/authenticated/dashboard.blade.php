@@ -1,329 +1,251 @@
-<x-layouts.app title="Dashboard — Unitimes">
+<x-layouts.app title="Dashboard - Unitimes">
 
-{{-- Estilos customizados --}}
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+<link rel="stylesheet" href="{{ asset('css/student-dashboard.css') }}">
 
-    :root {
-        --bg:        #0d1117;
-        --surface:   #161b22;
-        --border:    #21262d;
-        --muted:     #8b949e;
-        --text:      #e6edf3;
-        --accent:    #58a6ff;
-        --green:     #3fb950;
-        --yellow:    #d29922;
-        --red:       #f85149;
-        --purple:    #bc8cff;
+@php
+    $user = Auth::user();
+    $emAlerta = 0;
+    $emPerigo = 0;
+    $diasLabels = [
+        'segunda' => 'Segunda-feira',
+        'terca' => 'Terça-feira',
+        'quarta' => 'Quarta-feira',
+        'quinta' => 'Quinta-feira',
+        'sexta' => 'Sexta-feira',
+        'sabado' => 'Sábado',
+    ];
+
+    foreach ($aulas as $aula) {
+        $qtd = $faltasPorAula->get($aula->id)?->quantidade ?? 0;
+        $limite = max(1, $aula->limite_faltas ?? 1);
+        $pct = ($qtd / $limite) * 100;
+
+        if ($pct >= 100) {
+            $emPerigo++;
+        } elseif ($pct >= 75) {
+            $emAlerta++;
+        }
     }
+@endphp
 
+<main class="student-dashboard">
+    <div class="page-shell grid gap-5">
+        <section class="hero-panel fade-up">
+            <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <p class="eyebrow">Bem-vindo de volta</p>
+                    <h1 class="font-display mt-2 text-3xl font-bold text-app">
+                        {{ $user->name }}
+                    </h1>
+                    <p class="mt-2 text-sm text-muted-app">
+                        Turma:
+                        <span class="font-semibold text-accent-app">
+                            {{ $user->turma->nome ?? 'Sem turma vinculada' }}
+                        </span>
+                    </p>
+                </div>
 
-    h1, h2, h3, .font-display { font-family: 'Syne', sans-serif; }
+                <div class="flex flex-wrap gap-3">
+                    <a href="#grade" class="action-button">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Grade completa
+                    </a>
 
-    .card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        transition: border-color .2s, box-shadow .2s;
-    }
-    .card:hover { border-color: #30363d; box-shadow: 0 4px 24px rgba(0,0,0,.4); }
+                    <form method="POST" action="{{ route('authenticated.logout') }}">
+                        @csrf
+                        <button type="submit" class="action-button danger">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            Sair
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
 
-    .progress-track {
-        background: var(--border);
-        border-radius: 99px;
-        height: 6px;
-        overflow: hidden;
-    }
-    .progress-fill {
-        height: 100%;
-        border-radius: 99px;
-        transition: width .6s cubic-bezier(.4,0,.2,1);
-    }
-
-    .badge {
-        font-family: 'Syne', sans-serif;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .06em;
-        text-transform: uppercase;
-        padding: 3px 10px;
-        border-radius: 99px;
-    }
-    .badge-ok     { background: rgba(63,185,80,.15); color: var(--green); }
-    .badge-warn   { background: rgba(210,153,34,.15); color: var(--yellow); }
-    .badge-danger { background: rgba(248,81,73,.15);  color: var(--red); }
-
-    .stat-number { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2rem; line-height: 1; }
-
-    .aula-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
-
-    /* grade horária */
-    .grade-slot {
-        border-radius: 8px;
-        padding: 8px 10px;
-        font-size: 12px;
-        line-height: 1.4;
-        border-left: 3px solid transparent;
-    }
-    .grade-slot.has-aula { background: rgba(88,166,255,.08); border-left-color: var(--accent); }
-    .grade-slot.empty    { background: transparent; }
-
-    /* animações de entrada */
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(16px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    .fade-up { animation: fadeUp .4s ease both; }
-    .delay-1 { animation-delay: .05s; }
-    .delay-2 { animation-delay: .10s; }
-    .delay-3 { animation-delay: .15s; }
-    .delay-4 { animation-delay: .20s; }
-    .delay-5 { animation-delay: .25s; }
-</style>
-
-<div class="min-h-screen" style="background:var(--bg); padding: 24px 20px 60px;">
-
-    {{-- ─── Header ─── --}}
-    <div class="fade-up max-w-6xl mx-auto mb-8 flex items-center justify-between gap-4 flex-wrap">
-        <div>
-            <p class="font-display text-xs tracking-widest uppercase mb-1" style="color:var(--muted)">Bem-vindo de volta</p>
-            <h1 class="font-display text-2xl font-bold" style="color:var(--text)">
-                {{ Auth::user()->name }}
-            </h1>
-            <p class="text-sm mt-1" style="color:var(--muted)">
-                Turma: <span style="color:var(--accent)">{{ Auth::user()->turma->nome ?? '—' }}</span>
-            </p>
-        </div>
-        <div>
-            <a href="{{route('authenticated.logout')}}"> logout</a>
-            
-        </div>
-        <div class="flex gap-3">
-            <a href="{{ route('authenticated.dashboard') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
-               style="background:var(--surface); border:1px solid var(--border); color:var(--text);">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                Grade Completa
-            </a>
-        </div>
-    </div>
-
-    <div class="max-w-6xl mx-auto grid gap-5">
-
-        {{-- ─── Cards de resumo ─── --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 fade-up delay-1">
-
-            {{-- Total de disciplinas --}}
-            <div class="card p-5">
-                <p class="text-xs font-medium mb-3" style="color:var(--muted)">DISCIPLINAS</p>
-                <p class="stat-number" style="color:var(--accent)">{{ $aulas->count() }}</p>
-                <p class="text-xs mt-1" style="color:var(--muted)">neste semestre</p>
+        <section class="grid grid-cols-2 gap-4 md:grid-cols-4 fade-up delay-1">
+            <div class="card summary-card">
+                <p class="eyebrow">Disciplinas</p>
+                <p class="stat-number mt-5 text-accent-app">{{ $aulas->count() }}</p>
+                <p class="mt-2 text-xs text-muted-app">neste semestre</p>
             </div>
 
-            {{-- Faltas totais --}}
-            <div class="card p-5">
-                <p class="text-xs font-medium mb-3" style="color:var(--muted)">FALTAS TOTAIS</p>
-                <p class="stat-number" style="color:var(--text)">{{ $faltasPorAula->sum('quantidade') }}</p>
-                <p class="text-xs mt-1" style="color:var(--muted)">registradas</p>
+            <div class="card summary-card">
+                <p class="eyebrow">Faltas totais</p>
+                <p class="stat-number mt-5 text-app">{{ $faltasPorAula->sum('quantidade') }}</p>
+                <p class="mt-2 text-xs text-muted-app">registradas</p>
             </div>
 
-            {{-- Em alerta --}}
-            @php
-                $emAlerta  = 0;
-                $emPerigo  = 0;
-                foreach ($aulas as $aula) {
-                    $qtd = $faltasPorAula->get($aula->id)?->quantidade?? 0;
-                    $pct = $aula->limite_faltas > 0 ? ($qtd / $aula->limite_faltas) * 100 : 0;
-                    if ($pct >= 100) $emPerigo++;
-                    elseif ($pct >= 75) $emAlerta++;
-                }
-            @endphp
-            <div class="card p-5">
-                <p class="text-xs font-medium mb-3" style="color:var(--muted)">EM ALERTA</p>
-                <p class="stat-number" style="color:var(--yellow)">{{ $emAlerta }}</p>
-                <p class="text-xs mt-1" style="color:var(--muted)">≥ 75% do limite</p>
+            <div class="card summary-card">
+                <p class="eyebrow">Em alerta</p>
+                <p class="stat-number mt-5 text-yellow-app">{{ $emAlerta }}</p>
+                <p class="mt-2 text-xs text-muted-app">75% ou mais do limite</p>
             </div>
 
-            {{-- Em risco --}}
-            <div class="card p-5">
-                <p class="text-xs font-medium mb-3" style="color:var(--muted)">RISCO REPROVAÇÃO</p>
-                <p class="stat-number" style="color:var(--red)">{{ $emPerigo }}</p>
-                <p class="text-xs mt-1" style="color:var(--muted)">limite atingido</p>
+            <div class="card summary-card">
+                <p class="eyebrow">Risco</p>
+                <p class="stat-number mt-5 text-red-app">{{ $emPerigo }}</p>
+                <p class="mt-2 text-xs text-muted-app">limite atingido</p>
+            </div>
+        </section>
+
+        <section class="card fade-up delay-2 card-clip">
+            <div class="flex items-center justify-between px-6 py-5 border-bottom-app">
+                <div>
+                    <p class="eyebrow">Acompanhamento</p>
+                    <h2 class="font-display mt-1 text-lg font-bold text-app">Frequência por disciplina</h2>
+                </div>
             </div>
 
-        </div>
-
-        {{-- ─── Lista de disciplinas + frequência ─── --}}
-        <div class="card fade-up delay-2" style="overflow:hidden;">
-            <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border)">
-                <h2 class="font-display font-bold text-base">Frequência por Disciplina</h2>
-            </div>
-
-            <div class="divide-y" style="border-color:var(--border)">
+            <div class="divide-y divide-border-app">
                 @forelse ($aulas as $aula)
                     @php
-                        $faltaReg = $faltas->where('aula_id', $aula->id)->first();
+                        $faltaReg = $faltasPorAula->get($aula->id);
                         $qtdFalta = $faltaReg?->quantidade ?? 0;
-                        $limite   = $aula->limite_faltas ?? 1;
-                        $pct      = min(100, ($qtdFalta / $limite) * 100);
+                        $presencas = $faltaReg?->presencas ?? 0;
+                        $limite = max(1, $aula->limite_faltas ?? 1);
+                        $pct = min(100, ($qtdFalta / $limite) * 100);
 
-                        if ($pct >= 100)     { $status = 'danger'; $cor = 'var(--red)';    $label = 'Reprovado'; }
-                        elseif ($pct >= 75)  { $status = 'warn';   $cor = 'var(--yellow)'; $label = 'Atenção'; }
-                        else                 { $status = 'ok';     $cor = 'var(--green)';  $label = 'OK'; }
+                        if ($pct >= 100) {
+                            $status = 'danger';
+                            $cor = 'var(--red)';
+                            $label = 'Risco';
+                        } elseif ($pct >= 75) {
+                            $status = 'warn';
+                            $cor = 'var(--yellow)';
+                            $label = 'Alerta';
+                        } else {
+                            $status = 'ok';
+                            $cor = 'var(--green)';
+                            $label = 'OK';
+                        }
                     @endphp
 
-                    <div class="px-6 py-4">
-                        <div class="flex items-start justify-between gap-4 mb-3">
-                            <div class="flex items-start gap-3 min-w-0">
-                                <div class="aula-dot mt-1.5" style="background:{{ $cor }}"></div>
+                    <article class="px-6 py-5">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                            <div class="flex min-w-0 gap-3">
+                                <div class="aula-dot aula-dot-{{ $status }}"></div>
                                 <div class="min-w-0">
-                                    <p class="font-medium text-sm truncate" style="color:var(--text)">{{ $aula->nome }}</p>
-                                    <p class="text-xs mt-0.5" style="color:var(--muted)">
+                                    <h3 class="truncate text-sm font-bold text-app">{{ $aula->nome }}</h3>
+                                    <p class="mt-1 text-xs text-muted-app">
                                         {{ $aula->professor ?? 'Professor não informado' }}
-                                        @if($aula->sala) · Sala {{ $aula->sala }} @endif
+                                        @if ($aula->sala)
+                                            · Sala {{ $aula->sala }}
+                                        @endif
                                     </p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3 flex-shrink-0">
-                                <span class="text-sm tabular-nums" style="color:var(--muted)">
-                                    <span style="color:var(--text); font-weight:600">{{ $qtdFalta }}</span>/{{ $limite }}
+
+                            <div class="flex flex-wrap items-center gap-3">
+                                <span class="text-sm tabular-nums text-muted-app">
+                                    <strong class="text-app">{{ $qtdFalta }}</strong>/{{ $limite }} faltas
                                 </span>
                                 <span class="badge badge-{{ $status }}">{{ $label }}</span>
                             </div>
                         </div>
 
-                        <div class="progress-track">
-                            <div class="progress-fill" style="width:{{ $pct }}%; background:{{ $cor }};"></div>
-                        </div>
+                        <progress class="mt-4 absence-progress progress-{{ $status }}" value="{{ $qtdFalta }}" max="{{ $limite }}"></progress>
 
-                        <div class="flex items-center gap-3 mt-3">
-                            {{-- Adicionar falta --}}
-                            <form method="POST" action="{{ route('faltas.adicionar', $aula->id) }}">
+                        <div class="mt-4 flex flex-wrap items-center gap-3">
+                            <form method="POST" action="{{ route('aulas.falta', $aula->id) }}">
                                 @csrf
-                                <button type="submit"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                                    style="background:rgba(248,81,73,.12); color:var(--red); border:1px solid rgba(248,81,73,.25);"
-                                    onclick="return confirm('Registrar falta em {{ $aula->nome }}?')">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button
+                                    type="submit"
+                                    class="action-button danger"
+                                    onclick="return confirm('Adicionar falta em {{ $aula->nome }}?')"
+                                >
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                     </svg>
-                                    Registrar Falta
+                                    Adicionar falta
                                 </button>
                             </form>
 
-                            {{-- Remover falta --}}
-                            @if($qtdFalta > 0)
-                            <form method="POST" action="{{ route('faltas.remover', $aula->id) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                                    style="background:rgba(88,166,255,.08); color:var(--accent); border:1px solid rgba(88,166,255,.2);">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
-                                    </svg>
-                                    Remover Falta
-                                </button>
-                            </form>
-                            @endif
+                            <span class="text-xs text-muted-app">
+                                {{ $presencas }} presenças registradas
+                            </span>
                         </div>
-                    </div>
+                    </article>
                 @empty
-                    <div class="px-6 py-12 text-center" style="color:var(--muted)">
-                        <svg class="w-10 h-10 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                        <p class="text-sm">Nenhuma disciplina encontrada para sua turma.</p>
+                    <div class="empty-state px-6 py-12">
+                        <div>
+                            <div class="empty-icon">
+                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-display text-base font-bold text-app">Nenhuma disciplina encontrada</h3>
+                            <p class="mx-auto mt-2 max-w-md text-sm text-muted-app">
+                                Ainda não existem aulas cadastradas para a sua turma.
+                            </p>
+                        </div>
                     </div>
                 @endforelse
             </div>
-        </div>
+        </section>
 
-        {{-- ─── Próximas aulas hoje ─── --}}
-        @php
-            $diasPt = ['domingo','segunda','terca','quarta','quinta','sexta','sabado'];
-            $hoje   = $diasPt[date('w')];
-            $aulasHoje = $aulas->where('dia_semana', $hoje)->sortBy('horario_inicio');
-        @endphp
-
-        @if($aulasHoje->count() > 0)
-        <div class="card fade-up delay-3 p-6">
-            <h2 class="font-display font-bold text-base mb-4">
-                Aulas de Hoje
-                <span class="text-xs font-normal ml-2" style="color:var(--muted)">{{ ucfirst($hoje) }}-feira</span>
-            </h2>
-            <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-                @foreach ($aulasHoje as $aula)
-                <div class="grade-slot has-aula">
-                    <p class="font-medium text-sm mb-0.5" style="color:var(--text)">{{ $aula->nome }}</p>
-                    <p class="text-xs" style="color:var(--accent)">
-                        {{ \Carbon\Carbon::parse($aula->horario_inicio)->format('H:i') }} –
-                        {{ \Carbon\Carbon::parse($aula->horario_fim)->format('H:i') }}
-                    </p>
-                    @if($aula->sala)
-                    <p class="text-xs mt-1" style="color:var(--muted)">Sala {{ $aula->sala }}</p>
-                    @endif
+        @if ($aulas->count() > 0)
+            <section id="grade" class="card fade-up delay-3 p-6">
+                <div class="mb-5">
+                    <p class="eyebrow">Semana</p>
+                    <h2 class="font-display mt-1 text-lg font-bold text-app">Grade completa</h2>
                 </div>
-                @endforeach
-            </div>
-        </div>
+
+                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($diasLabels as $dia => $label)
+                        <div>
+                            <h3 class="mb-3 text-sm font-bold text-app">{{ $label }}</h3>
+                            <div class="grid gap-3">
+                                @forelse (($aulasPorDia[$dia] ?? collect()) as $aula)
+                                    <div class="grade-slot">
+                                        <p class="text-sm font-bold text-app">{{ $aula->nome }}</p>
+                                        <p class="mt-1 text-xs text-accent-app">
+                                            {{ \Carbon\Carbon::parse($aula->horario_inicio)->format('H:i') }} -
+                                            {{ \Carbon\Carbon::parse($aula->horario_fim)->format('H:i') }}
+                                        </p>
+                                        @if ($aula->sala)
+                                            <p class="mt-1 text-xs text-muted-app">Sala {{ $aula->sala }}</p>
+                                        @endif
+                                    </div>
+                                @empty
+                                    <p class="rounded-lg border border-dashed px-3 py-3 text-xs empty-day">
+                                        Sem aulas neste dia.
+                                    </p>
+                                @endforelse
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
         @endif
 
-        {{-- ─── Alertas ativos ─── --}}
-        @if($emAlerta > 0 || $emPerigo > 0)
-        <div class="fade-up delay-4 grid sm:grid-cols-2 gap-4">
-            @if($emPerigo > 0)
-            <div class="card p-5 flex gap-4 items-start" style="border-color:rgba(248,81,73,.3); background:rgba(248,81,73,.05);">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(248,81,73,.15);">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" style="color:var(--red)" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="font-display font-bold text-sm" style="color:var(--red)">Risco de Reprovação</p>
-                    <p class="text-xs mt-1" style="color:var(--muted)">
-                        Você atingiu o limite de faltas em <strong style="color:var(--text)">{{ $emPerigo }}</strong>
-                        {{ $emPerigo === 1 ? 'disciplina' : 'disciplinas' }}.
-                        Entre em contato com a coordenação.
-                    </p>
-                </div>
-            </div>
+        @if ($emAlerta > 0 || $emPerigo > 0)
+            <section class="grid gap-4 sm:grid-cols-2 fade-up delay-3">
+                @if ($emPerigo > 0)
+                    <div class="card p-5 alert-danger-card">
+                        <p class="font-display text-sm font-bold text-red-app">Risco de reprovação</p>
+                        <p class="mt-2 text-sm text-muted-app">
+                            Você atingiu o limite de faltas em <strong class="text-app">{{ $emPerigo }}</strong>
+                            {{ $emPerigo === 1 ? 'disciplina' : 'disciplinas' }}.
+                        </p>
+                    </div>
+                @endif
 
-            <div class="flex items-center gap-3">
-    <a href="{{ route('authenticated.dashboard') }}"
-       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
-       style="background:var(--surface); border:1px solid var(--border); color:var(--text);">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        Grade Completa
-    </a>
-    <form method="POST" action="{{ route('authenticated.logout') }}">
-            @endif
-
-            @if($emAlerta > 0)
-            <div class="card p-5 flex gap-4 items-start" style="border-color:rgba(210,153,34,.3); background:rgba(210,153,34,.05);">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(210,153,34,.15);">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" style="color:var(--yellow)" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="font-display font-bold text-sm" style="color:var(--yellow)">Atenção às Faltas</p>
-                    <p class="text-xs mt-1" style="color:var(--muted)">
-                        <strong style="color:var(--text)">{{ $emAlerta }}</strong>
-                        {{ $emAlerta === 1 ? 'disciplina está' : 'disciplinas estão' }} acima de 75% do limite.
-                        Reduza as faltas para evitar reprovação.
-                    </p>
-                </div>
-            </div>
-            @endif
-        </div>
+                @if ($emAlerta > 0)
+                    <div class="card p-5 alert-warn-card">
+                        <p class="font-display text-sm font-bold text-yellow-app">Atenção às faltas</p>
+                        <p class="mt-2 text-sm text-muted-app">
+                            <strong class="text-app">{{ $emAlerta }}</strong>
+                            {{ $emAlerta === 1 ? 'disciplina está' : 'disciplinas estão' }} acima de 75% do limite.
+                        </p>
+                    </div>
+                @endif
+            </section>
         @endif
-
     </div>
-</div>
+</main>
 
 </x-layouts.app>

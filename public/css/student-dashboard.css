@@ -1,0 +1,319 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-strong: #1c222b;
+    --border: #29313d;
+    --muted: #9ba6b2;
+    --text: #edf2f7;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+}
+
+.student-dashboard {
+    background:
+        radial-gradient(circle at 18% -10%, rgba(88, 166, 255, .18), transparent 32%),
+        linear-gradient(180deg, #0d1117 0%, #0a0f16 100%);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-stretch: normal;
+    letter-spacing: 0;
+    min-height: 100vh;
+    padding: 28px 20px 64px;
+}
+
+.font-display,
+h1,
+h2,
+h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-stretch: normal;
+    letter-spacing: 0;
+    line-height: 1.2;
+}
+
+.page-shell {
+    margin: 0 auto;
+    max-width: 1160px;
+}
+
+.hero-panel,
+.card {
+    background: rgba(22, 27, 34, .92);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .20);
+}
+
+.hero-panel {
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.card {
+    border-radius: 14px;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+
+.card:hover {
+    border-color: #3a4554;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .26);
+    transform: translateY(-1px);
+}
+
+.eyebrow {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.action-button {
+    align-items: center;
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 700;
+    gap: 8px;
+    padding: 10px 14px;
+    text-decoration: none;
+    transition: border-color .15s, background .15s, color .15s;
+}
+
+.action-button:hover {
+    background: #202936;
+    border-color: #465466;
+}
+
+.action-button.danger {
+    background: rgba(248, 81, 73, .10);
+    border-color: rgba(248, 81, 73, .28);
+    color: #ffb4ad;
+}
+
+.summary-card {
+    min-height: 128px;
+    padding: 20px;
+}
+
+.stat-number {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 2.35rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.05;
+}
+
+.progress-track {
+    background: #29313d;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    border-radius: 999px;
+    height: 100%;
+    transition: width .35s ease;
+}
+
+.badge {
+    border-radius: 999px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0;
+    padding: 4px 10px;
+    text-transform: uppercase;
+}
+
+.badge-ok {
+    background: rgba(63, 185, 80, .16);
+    color: var(--green);
+}
+
+.badge-warn {
+    background: rgba(210, 153, 34, .16);
+    color: var(--yellow);
+}
+
+.badge-danger {
+    background: rgba(248, 81, 73, .16);
+    color: var(--red);
+}
+
+.aula-dot {
+    border-radius: 999px;
+    flex-shrink: 0;
+    height: 11px;
+    margin-top: 5px;
+    width: 11px;
+}
+
+.empty-state {
+    display: grid;
+    min-height: 190px;
+    place-items: center;
+    text-align: center;
+}
+
+.empty-icon {
+    align-items: center;
+    background: rgba(88, 166, 255, .10);
+    border: 1px solid rgba(88, 166, 255, .18);
+    border-radius: 16px;
+    color: var(--accent);
+    display: inline-flex;
+    height: 52px;
+    justify-content: center;
+    margin-bottom: 14px;
+    width: 52px;
+}
+
+.grade-slot {
+    background: rgba(88, 166, 255, .08);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-up {
+    animation: fadeUp .35s ease both;
+}
+
+.delay-1 {
+    animation-delay: .05s;
+}
+
+.delay-2 {
+    animation-delay: .10s;
+}
+
+.delay-3 {
+    animation-delay: .15s;
+}
+
+.text-app {
+    color: var(--text);
+}
+
+.text-muted-app {
+    color: var(--muted);
+}
+
+.text-accent-app {
+    color: var(--accent);
+}
+
+.text-yellow-app {
+    color: var(--yellow);
+}
+
+.text-red-app {
+    color: var(--red);
+}
+
+.border-bottom-app {
+    border-bottom: 1px solid var(--border);
+}
+
+.divide-border-app {
+    border-color: var(--border);
+}
+
+.card-clip {
+    overflow: hidden;
+}
+
+.aula-dot-ok {
+    background: var(--green);
+}
+
+.aula-dot-warn {
+    background: var(--yellow);
+}
+
+.aula-dot-danger {
+    background: var(--red);
+}
+
+.absence-progress {
+    appearance: none;
+    background: #29313d;
+    border: 0;
+    border-radius: 999px;
+    display: block;
+    height: 8px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.absence-progress::-webkit-progress-bar {
+    background: #29313d;
+}
+
+.absence-progress::-webkit-progress-value {
+    border-radius: 999px;
+}
+
+.absence-progress::-moz-progress-bar {
+    border-radius: 999px;
+}
+
+.progress-ok::-webkit-progress-value {
+    background: var(--green);
+}
+
+.progress-warn::-webkit-progress-value {
+    background: var(--yellow);
+}
+
+.progress-danger::-webkit-progress-value {
+    background: var(--red);
+}
+
+.progress-ok::-moz-progress-bar {
+    background: var(--green);
+}
+
+.progress-warn::-moz-progress-bar {
+    background: var(--yellow);
+}
+
+.progress-danger::-moz-progress-bar {
+    background: var(--red);
+}
+
+.empty-day {
+    border-color: var(--border);
+    color: var(--muted);
+}
+
+.alert-danger-card {
+    background: rgba(248, 81, 73, .06);
+    border-color: rgba(248, 81, 73, .35);
+}
+
+.alert-warn-card {
+    background: rgba(210, 153, 34, .06);
+    border-color: rgba(210, 153, 34, .35);
+}
