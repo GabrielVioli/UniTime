@@ -11,16 +11,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Rota temporária para rodar as migrations (pois não há acesso ao shell)
-Route::get('/run-migrations', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return 'Migrações concluídas com sucesso!';
-    } catch (\Exception $e) {
-        return 'Erro: ' . $e->getMessage();
-    }
-})->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class]);
-
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
