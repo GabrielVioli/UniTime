@@ -1,11 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
     --bg: #0d1117;
-    --surface: #161b22;
-    --border: #21262d;
-    --muted: #8b949e;
-    --text: #e6edf3;
+    --surface: #171d25;
+    --surface-strong: #0b1118;
+    --border: #29313d;
+    --muted: #a6b0bf;
+    --text: #eef4fb;
     --accent: #58a6ff;
     --green: #3fb950;
     --yellow: #d29922;
@@ -16,13 +17,17 @@ h1,
 h2,
 h3,
 .font-display {
-    font-family: 'Syne', sans-serif;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0;
+    line-height: 1.2;
 }
 
 .card {
-    background: var(--surface);
+    background: rgba(23, 29, 37, .96);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
 }
 
 .btn-primary {
@@ -33,17 +38,19 @@ h3,
     color: #0d1117;
     cursor: pointer;
     display: inline-flex;
-    font-family: 'Syne', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     gap: 6px;
-    padding: 8px 16px;
+    min-height: 42px;
+    padding: 10px 16px;
     text-decoration: none;
-    transition: opacity .15s;
+    transition: opacity .15s, transform .15s;
 }
 
 .btn-primary:hover {
     opacity: .85;
+    transform: translateY(-1px);
 }
 
 .btn-ghost {
@@ -67,20 +74,23 @@ h3,
 }
 
 .form-input {
-    background: var(--bg);
+    background: var(--surface-strong);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
+    min-height: 38px;
     outline: none;
-    padding: 8px 12px;
-    transition: border-color .15s;
+    padding: 9px 12px;
+    transition: border-color .15s, box-shadow .15s, background .15s;
     width: 100%;
 }
 
 .form-input:focus {
+    background: #0e151f;
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, .14);
 }
 
 .form-input option {
@@ -90,11 +100,22 @@ h3,
 .form-label {
     color: var(--muted);
     display: block;
-    font-family: 'Syne', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .04em;
-    margin-bottom: 5px;
+    font-weight: 800;
+    letter-spacing: 0;
+    margin-bottom: 7px;
+}
+
+.admin-aulas-screen label {
+    color: var(--muted);
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0;
+    margin-bottom: 7px;
+    text-transform: uppercase;
 }
 
 .table-row:hover {
@@ -106,9 +127,9 @@ h3,
     border: 1px solid rgba(88, 166, 255, .2);
     border-radius: 99px;
     color: var(--accent);
-    font-family: 'Syne', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 800;
     padding: 3px 10px;
 }
 
@@ -159,7 +180,11 @@ h3,
 }
 
 .admin-aulas-screen {
-    background: var(--bg);
+    background:
+        radial-gradient(circle at 18% -10%, rgba(88, 166, 255, .14), transparent 32%),
+        linear-gradient(180deg, #0d1117 0%, #0a0f16 100%);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
     padding: 24px 20px 80px;
 }
@@ -191,4 +216,31 @@ h3,
 .table-card {
     height: fit-content;
     overflow: hidden;
+}
+
+.admin-aulas-screen input::placeholder {
+    color: #8c98a8;
+}
+
+.admin-aulas-screen select {
+    cursor: pointer;
+}
+
+.admin-aulas-screen select:invalid,
+.admin-aulas-screen input:placeholder-shown {
+    color: #c5d0de;
+}
+
+.admin-aulas-screen table thead {
+    background: rgba(13, 17, 23, .28);
+}
+
+.admin-aulas-screen table th {
+    color: #b8c7dc;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.admin-aulas-screen table td {
+    color: var(--text);
 }
