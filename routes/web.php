@@ -19,7 +19,7 @@ Route::get('/run-migrations', function () {
     } catch (\Exception $e) {
         return 'Erro: ' . $e->getMessage();
     }
-});
+})->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class]);
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
