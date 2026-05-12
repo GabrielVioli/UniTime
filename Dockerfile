@@ -3,36 +3,18 @@ WORKDIR /app
 COPY . .
 RUN npm install && npm run build
 
-FROM php:8.3-fpm-alpine
+FROM php:8.3-cli-alpine
 
-RUN apk add --no-cache \
-    nginx \
-    wget \
-    icu-dev \
-    libpq-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    git
-
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql intl zip bcmath
+RUN apk add --no-cache icu-dev libpq-dev libzip-dev zip unzip git \
+    && docker-php-ext-install pdo pdo_pgsql intl zip bcmath
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
-
 COPY . .
 COPY --from=node-stage /app/public/build ./public/build
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction \
+    && chown -R www-data:www-data storage bootstrap/cache
 
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-COPY ./docker/nginx.conf /etc/nginx/http.d/default.conf
-
-COPY ./docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-EXPOSE 80
-
-ENTRYPOINT ["entrypoint.sh"]
+EXPOSE 8000
