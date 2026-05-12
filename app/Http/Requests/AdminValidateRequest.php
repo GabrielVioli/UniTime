@@ -15,7 +15,7 @@ class AdminValidateRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:6'],
             'admin_code' => ['required', 'string'],
         ];
     }

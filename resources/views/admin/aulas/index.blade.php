@@ -315,4 +315,3 @@
 </div>
 
 </x-layouts.app>
-<label class="form-label">NOME DA DISCIPLINA</label>

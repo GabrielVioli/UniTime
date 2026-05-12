@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/aulas/{aula}/presenca', [DashboardController::class, 'marcarPresenca'])->name('aulas.presenca');
     Route::post('/aulas/{aula}/falta', [DashboardController::class, 'marcarFalta'])->name('aulas.falta');
 
-    Route::post('/logout', [AuthController::class, 'logout'])->name('authenticated.logout');
+    Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('authenticated.logout');
 });
 
 Route::middleware('guest')->group(function () {
