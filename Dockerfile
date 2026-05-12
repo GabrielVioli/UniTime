@@ -15,7 +15,7 @@ RUN apk add --no-cache \
     unzip \
     git
 
-RUN docker-php-ext-install pdo pdo_mysql intl zip bcmath
+RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql intl zip bcmath
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
